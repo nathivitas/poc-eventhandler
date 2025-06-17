@@ -4,18 +4,19 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws --version
-      - $(aws ecr get-login --no-include-email --region us-east-1)
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 165274966895.dkr.ecr.us-east-1.amazonaws.com
+      - REPO_URI=165274966895.dkr.ecr.us-east-1.amazonaws.com/poc-eventhandler
+      - IMAGE_TAG=latest
   build:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
-      - docker build -t poc-eventhandler .
-      - docker tag poc-eventhandler:latest 165274966895.dkr.ecr.us-east-1.amazonaws.com/poc-eventhandler:latest
+      - docker build -t $REPO_URI:$IMAGE_TAG .
   post_build:
     commands:
+      - echo Build completed on `date`
       - echo Pushing the Docker image...
-      - docker push 165274966895.dkr.ecr.us-east-1.amazonaws.com/poc-eventhandler:latest
+      - docker push $REPO_URI:$IMAGE_TAG
+
 artifacts:
-  files:
-    - '**/*'
+  files: []
